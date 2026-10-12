@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "isDemo": true,
+  "lastUpdatedAt": null,
+  "timeZone": "America/Chicago",
+  "pantry": {
+    "name": "Sample Community Pantry",
+    "location": "Your neighborhood · Demo location",
+    "address": "Fictional location — no visits. Replace with your partner pantry’s public address.",
+    "phone": "",
+    "hours": [
+      { "days": "Monday & Wednesday", "time": "10 am – 2 pm" },
+      { "days": "Friday", "time": "3 pm – 6 pm" },
+      { "days": "Other days", "time": "Closed" }
+    ],
+    "requirements": [
+      "Example: bring reusable bags if you have them.",
+      "Example: check the pantry’s service area before visiting.",
+      "Replace these examples with verified requirements."
+    ],
+    "note": "These hours and requirements are examples, not information about a real pantry."
+  },
+  "categories": [
+    { "id": "produce", "name": "Fresh produce", "description": "Seasonal vegetables & fruit", "status": "available" },
+    { "id": "grains", "name": "Rice & pasta", "description": "Everyday grains & dry staples", "status": "available" },
+    { "id": "canned", "name": "Canned goods", "description": "Beans, vegetables & soups", "status": "available" },
+    { "id": "dairy", "name": "Milk & dairy", "description": "Milk, cheese & yogurt", "status": "limited" },
+    { "id": "bread", "name": "Bread & bakery", "description": "Loaves, rolls & other baked goods", "status": "limited" },
+    { "id": "baby", "name": "Baby essentials", "description": "Baby food & diapers", "status": "unavailable" }
+  ]
+}

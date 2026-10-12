@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Know what a community food pantry has before making the trip. A simple availability board with hours and visit information.">
+  <meta name="theme-color" content="#204f40">
+  <title>PantryPing — Know before you go</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#availability">Skip to food availability</a>
+  <header class="site-header wrap">
+    <a class="brand" href="./" aria-label="PantryPing home"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h16l-2 11H6L4 9Zm4 0 4-6 4 6M9 13v3m6-3v3"/></svg></span>PantryPing<span class="brand-dot">.</span></a>
+    <button class="button button-quiet" id="open-editor" disabled>Pantry staff <span aria-hidden="true">↗</span></button>
+  </header>
+  <main class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <div><p class="eyebrow">A clearer path to your next meal</p><h1 id="hero-title">Know before<br><em>you go.</em></h1><p class="hero-copy">Check what’s available, when to visit, and what to bring. One less thing to wonder about.</p><a class="text-link" href="#availability">See food availability <span aria-hidden="true">↓</span></a></div>
+      <div class="hero-art" aria-hidden="true"><svg viewBox="0 0 380 275" fill="none"><circle cx="206" cy="137" r="108" fill="#e4eadc"/><ellipse cx="204" cy="246" rx="99" ry="9" fill="#cad4bc"/><path d="m164 104-11-55c-3-19 8-30 21-25 15 5 15 28 19 52l5 28" fill="#ddb978"/><path d="m168 49 10-5m-7 25 12-5m-8 23 13-5" stroke="#b48e55" stroke-width="4" stroke-linecap="round"/><path d="m204 108 18-48 35 12-7 45" fill="#f7f9f2" stroke="#b4c7ae" stroke-width="3"/><path d="m222 60 11-16 29 10-5 18" fill="#d1dfc8"/><path d="m233 44-1 19" stroke="#a4b39b" stroke-width="3"/><path d="m273 121 3-67" stroke="#536f42" stroke-width="6"/><path d="M277 74c-33 0-35-21-32-31 28 3 33 19 32 31Zm0-5c0-29 21-35 30-28-5 24-20 29-30 28Zm-1 27c-26 1-35-14-34-24 23-5 35 12 34 24Z" fill="#78965f"/><path d="m131 107 152 3-14 125H142l-11-128Z" fill="#f0c783"/><path d="m131 107 12 128h20l-3-124-29-4Z" fill="#ddb171"/><path d="m149 117 123-2" stroke="#d3a161" stroke-width="3"/><path d="M180 118v28c0 29 42 29 42 0v-27" stroke="#fff8e9" stroke-width="9" stroke-linecap="round"/><path d="M192 195c0-8 9-13 15-6 6-7 15-2 15 6 0 8-15 18-15 18s-15-10-15-18Z" fill="#496544"/><circle cx="105" cy="101" r="22" fill="#204f40"/><path d="m96 101 6 6 11-13" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M306 151h16m-8-8v16M102 196h10m-5-5v10" stroke="#8b9a71" stroke-width="3" stroke-linecap="round"/></svg><span class="art-caption">Good food. Fewer unknowns.</span></div>
+    </section>
+    <div id="demo-banner" class="notice" hidden><span class="notice-icon" aria-hidden="true">i</span><p><strong>You’re viewing a demo.</strong> This pantry and its food availability are fictional. Please don’t use these details to plan a visit.</p></div>
+    <div id="preview-banner" class="notice preview" hidden><p><strong>Local preview only.</strong> Visitors still see the published data.</p><button id="exit-preview" class="text-button">Back to published</button></div>
+    <div id="load-error" class="notice error" role="alert" hidden><p>We couldn’t load the pantry’s information. Availability is unknown. Please try again.</p><button id="retry" class="button button-small">Try again</button></div>
+    <p id="loading" role="status">Loading pantry information…</p>
+    <div id="pantry-content" hidden>
+      <section class="pantry-heading" aria-labelledby="pantry-name"><div><p class="eyebrow" id="pantry-location"></p><h2 id="pantry-name"></h2></div><div id="freshness" class="freshness"><span class="freshness-dot" aria-hidden="true"></span><div><strong id="freshness-label"></strong><span id="freshness-detail"></span></div></div></section>
+      <div class="content-layout">
+        <section id="availability" aria-labelledby="availability-title" tabindex="-1">
+          <div class="section-heading"><h3 id="availability-title">On the shelves</h3><span id="result-count" aria-live="polite"></span></div>
+          <p id="stock-context" class="muted"></p>
+          <div class="filters"><div class="search-box"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg><label for="search" class="sr-only">Search food categories</label><input id="search" type="search" placeholder="What are you looking for?" maxlength="120"></div><label class="check-label"><input id="available-only" type="checkbox"> In stock only</label></div>
+          <div id="category-grid" class="category-grid"></div>
+          <div id="empty-state" class="empty-state" hidden><strong>No matching categories</strong><p>Try another search, or show all categories.</p><button class="text-button" id="clear-filters">Clear filters</button></div>
+          <p class="stock-footnote">Availability can change between updates. “Limited” means supplies may run out. Contact the pantry before making a special trip.</p>
+        </section>
+        <aside class="visit-card" aria-labelledby="visit-title"><div class="visit-heading"><span aria-hidden="true">↗</span><h3 id="visit-title">Plan your visit</h3></div><section><h4>Location</h4><p id="pantry-address"></p><a id="call-link" class="text-link" hidden>Call the pantry <span aria-hidden="true">↗</span></a></section><section><h4>Opening hours</h4><dl id="pantry-hours"></dl><p class="small muted" id="timezone-label"></p></section><section><h4>Before you arrive</h4><ul id="pantry-requirements"></ul></section><p id="pantry-note" class="visit-note"></p></aside>
+      </div>
+    </div>
+    <section class="how-it-works" aria-label="How PantryPing works"><div><span>01</span><p><strong>Check the shelves</strong>See the pantry’s latest reported stock.</p></div><div><span>02</span><p><strong>Plan your visit</strong>Check the hours and requirements.</p></div><div><span>03</span><p><strong>Go with confidence</strong>Confirm details when an update is old.</p></div></section>
+  </main>
+  <footer class="wrap site-footer"><span>PantryPing <span aria-hidden="true">·</span> A little certainty goes a long way.</span><span>No visitor accounts. No tracking.</span></footer>
+  <dialog id="editor" aria-labelledby="editor-title"><div class="editor-header"><div><p class="eyebrow">Pantry staff</p><h2 id="editor-title">Update the board</h2></div><button class="close-button" id="close-editor" aria-label="Close editor">×</button></div><p class="editor-intro">Preview changes here, then download the data file and publish it to GitHub. Only repository maintainers can change the public board.</p><form id="editor-form" novalidate><label class="demo-toggle"><input id="edit-demo" type="checkbox"> Keep this a clearly labeled demo</label><details><summary>Pantry details &amp; visiting information</summary><div class="field-grid"><label>Pantry name<input id="edit-name" required maxlength="120"></label><label>Area or city<input id="edit-location" required maxlength="120"></label><label class="full-width">Public address<input id="edit-address" required maxlength="240"></label><label>Public phone (optional)<input id="edit-phone" type="tel" maxlength="40"></label><label>Time zone<input id="edit-timezone" required placeholder="America/Chicago" maxlength="80"></label><label class="full-width">Hours — one line per schedule, days | time<textarea id="edit-hours" rows="3" required></textarea></label><label class="full-width">Visit requirements — one per line<textarea id="edit-requirements" rows="3"></textarea></label><label class="full-width">Pantry note<textarea id="edit-note" rows="2" maxlength="500"></textarea></label></div></details><h3 class="editor-subtitle">Food availability</h3><p class="small muted">Choose “Not confirmed” if you haven’t checked a category.</p><div id="editor-categories"></div><label class="confirm-label"><input id="confirm-stock" type="checkbox" required> I checked these statuses just now and set any unverified category to “Not confirmed.”</label><p id="editor-error" class="form-error" role="alert" hidden></p><div class="editor-actions"><button class="button" type="submit">Preview board</button><button class="button button-outline" type="button" id="download-data">Download pantry.json</button></div><p id="editor-message" role="status"></p><div class="publish-help"><strong>To make your update visible to everyone</strong><ol><li>Download <code>pantry.json</code> above.</li><li>Open your repository’s upload page, replace <code>pantry.json</code>, and commit the change.</li><li>Wait for GitHub Pages to deploy, then refresh the public board.</li></ol><a class="text-link" id="github-upload" href="https://github.com/aaravsinhaofficial/pantryping/upload/main" target="_blank" rel="noopener noreferrer">Open GitHub upload page ↗</a><p class="small muted">No GitHub passwords or access tokens are entered into this app. Downloads and previews do not publish changes.</p></div><label class="import-label">Load an existing data file <input id="import-data" type="file" accept=".json,application/json"></label></form></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <noscript><p class="wrap notice">JavaScript is needed to display pantry availability. No stock information has been loaded.</p></noscript>
+</body>
+</html>
