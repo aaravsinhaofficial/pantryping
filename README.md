@@ -1,60 +1,95 @@
 # PantryPing
 
-A small, buildless food-pantry availability board for GitHub Pages. Visitors can check six food categories, filter stock, and read opening hours and visit requirements without an account.
+[Open PantryPing](https://aaravsinhaofficial.github.io/pantryping/)
 
-**The included pantry and every availability status are fictional demo data. Do not use them to plan a visit.**
+A small, buildless food-pantry availability board on GitHub Pages. Check food categories, make a visit checklist, and see hours and requirements without a visitor account.
 
-## Publish on GitHub Pages
+**The included pantry and stock statuses are fictional demo data. Do not use them to plan a visit.**
 
-1. Create a public GitHub repository named `pantryping`.
-2. Add these files to the repository root, including `.nojekyll`.
-3. Under **Settings → Pages**, select **Deploy from a branch**, **main**, and **/ (root)**, then save.
-4. Wait for the GitHub Pages deployment to succeed. Open the URL shown by GitHub.
+## For visitors
 
-There is no build step, package installation, backend, API key, or database. All asset paths are relative so project Pages URLs work. If your repository name or owner differs, update the `github-upload` link in `index.html`.
+- Search food categories or show only available/limited stock.
+- Add the categories you need to **My visit list**. See which are reported in stock; copy or print a plan with hours and requirements.
+- The list stays only in the current tab. It does not reserve food.
+- After 24 hours, or with a missing/unreliable timestamp, the board shows **Not confirmed** and excludes old positive reports from the stock filter.
+- For a verified real pantry, public phone and directions links are enabled. Demo data never produces directions or a call link.
 
-## Update availability
+## For pantry staff
 
-1. Open **Pantry staff** on the site. Change stock statuses and, if needed, pantry details.
-2. Review every category; mark anything you have not checked **Not confirmed**.
-3. Check the confirmation box, then choose **Preview board** to inspect a local preview or **Download pantry.json** to export an update.
-4. Upload the downloaded `pantry.json` to the repository root, replacing the old file, and commit the change. Only repository maintainers can publish updates.
-5. Wait for Pages deployment and refresh the public site.
+Open **Pantry staff** and choose one of three ways to start:
 
-The editor is intentionally not a login-protected admin backend. Anyone can experiment with it, but previews and downloads cannot change the public board. Preview data exists only in that page's memory and is lost on reload. Never enter GitHub credentials or tokens in this app. Staff need GitHub repository access for the publishing step.
+1. **Upload a sheet:** drag a CSV or PantryPing JSON file onto the upload area, or browse for it. A downloadable CSV template includes your categories. CSV stays on your device; JSON may also replace pantry details. Files are limited to 100 KB.
+2. **AI stock note:** write a short public inventory note. Enable AI, sign in with Puter, then generate suggestions. Each non-unknown suggestion includes a quote from your note for review.
+3. **Edit manually:** choose statuses directly from the dropdowns.
+
+Review every category and all changed details. Imports and AI set unmentioned categories to **Not confirmed**. Old or undated real JSON reports also become unconfirmed. Check the review box, then preview locally or publish.
+
+### Easier publishing
+
+Choose **Publish with GitHub**, then **Continue to GitHub**. GitHub opens a prepared publication request. Leave the title and JSON unchanged and click **Create** within 15 minutes of your review. The issue, its data, and the repository are public.
+
+Only **aaravsinhaofficial**, the repository owner, can publish through this workflow. Other visitors can try the editor but cannot change the board. GitHub handles authentication; no GitHub token or password goes into PantryPing.
+
+The Action validates the request, checks the inventory confirmation time, and compares the pantry file SHA before saving only `pantry.json`. The editor also rejects a board changed since you loaded it. A newer change is never force-overwritten. Successful requests are closed with a result comment and the same workflow deploys Pages. Check **Actions** for completion, then use **Refresh board** on the site. This normally takes a few minutes. A rejected request describes how to recover; prepare a new request after fixing it.
+
+**Backup & manual publishing** still offers a JSON download and the repository upload page. Previews and downloads do not publish. Drafts are held in memory and lost on reload.
+
+### CSV format
+
+Use the exact headers `category,status` (either order, case-insensitive). Each category must match an existing ID or full name. One row per category; missing categories become unknown. Quoted commas, escaped quotes and multiline CSV fields are supported; malformed or duplicate rows are rejected.
+
+```csv
+category,status
+produce,available
+grains,available
+dairy,limited
+baby,unavailable
+```
+
+Statuses: `available`, `limited`, `unavailable`, `unknown`. Friendly aliases: `In stock`, `Out of stock`, `Not confirmed`. The template starts every category at **Not confirmed**. It never carries old stock forward automatically.
+
+## AI behavior, cost and privacy
+
+This is a real optional generative-AI integration through [Puter.js](https://docs.puter.com/AI/chat/), using Puter's default chat model. It is not a simulated response or a keyword matcher.
+
+- The provider SDK loads only after **Enable AI**. Staff explicitly sign in and click **Generate suggestions** for each request. Generation uses the signed-in user's Puter credits, subject to Puter's terms and limits; no unlimited-free claim is made. See [Puter's usage model](https://docs.puter.com/user-pays-model/).
+- Puter receives your stock note and public category IDs/names/descriptions. Existing stock, pantry contact information, hours and eligibility policies are excluded from the AI prompt. Do not include names, student information, household details, private contact information or other sensitive data in a note.
+- Suggestions must use known category IDs and allowed statuses. Non-unknown statuses require a verbatim supporting quote. Missing categories become unknown. This verifies the output format and quotations, not the correctness of an interpretation: **a person must review every suggestion**.
+- AI cannot directly publish or change pantry policies. Invalid responses and service/credit failures show errors; there is no fake fallback or automatic billable retry. Upload and manual editing remain available without AI.
+
+Visitors use no account, geolocation, analytics, cookies or local storage added by this app. GitHub handles hosting requests. The optional Puter SDK has its own account/storage/privacy behavior once enabled. Phone/maps links open only on request. Published pantry data and publish-request issues are public.
 
 ## Before using a real pantry
 
-- Get the pantry's agreement and verify its public address, phone, hours, service area, requirements, and category names.
-- Replace **all** fictional examples. The editor supports name, location, address, phone, hours, requirements, and note changes. Edit `pantry.json` to add or rename categories (up to 40).
-- Uncheck **Keep this a clearly labeled demo** only after replacing and verifying the information.
-- Reconfirm all stock categories when publishing. The editor timestamps this review. Category availability is not a reservation.
-- App timestamps refer to the last inventory review, not the last visitor refresh. After 24 hours, or if the timestamp is missing or implausibly in the future, positive stock badges become **Not confirmed**, and the current-stock filter excludes them. Previously reported status remains visible for context.
-- This version supports one pantry. It does not locate nearby pantries, send messages, reserve food, or provide real-time inventory synchronization.
+Get a pantry partner's agreement. Replace and verify **all** sample address, phone, hours, service area, requirements, stock and notes, then turn off the demo checkbox. Never publish client/visitor records. This version supports one pantry and category-level stock, not individual product quantities, reservations, nearest-pantry search or automatic inventory synchronization.
 
-## Privacy
+## Deployment and development
 
-The app collects no visitor information, uses no analytics, no geolocation, no local storage, no cookies of its own, and no external fonts or APIs. GitHub Pages handles standard hosting requests under GitHub's policies. All published JSON and source code are public. Include only approved public pantry information, never visitor names, student records, private phone numbers, or household details.
+The repository uses **Settings → Pages → Source → GitHub Actions**. `.github/workflows/pages.yml` tests and deploys on `main` changes, manual workflow dispatch, or a successful owner publication request. Issues and Actions must be enabled. The issue-processing job alone has contents/issues write permissions; the deploy job has read access plus Pages deployment permissions. There is no custom server, database, dependency installation or build step.
 
-## Local development
+To reuse this repository, update `REPOSITORY` in `publish.mjs`, the repository links in `index.html`/README, and choose GitHub Actions as the new repository's Pages source. All asset URLs are relative.
 
 ```sh
 python3 -m http.server 8000
 # Open http://localhost:8000
-node --test data.test.mjs
+node --test
 node --check app.mjs
 ```
 
-ES modules and JSON fetching require an HTTP server; opening `index.html` directly with a `file:` URL is not supported. If data cannot load or validate, the app shows an error and no stock claims instead of quietly substituting sample data.
+ES modules require HTTP(S); `file:` URLs are unsupported. Failed data loads show no inventory claims. Public unauthenticated GitHub API requests used to prepare a publish link may be rate-limited; a backup download remains available.
 
 ## Project structure
 
-- `index.html`, `styles.css`, `favicon.svg`: accessible, responsive interface and original vector decoration.
-- `app.mjs`: visitor filters, rendering, and staff editor.
-- `data.mjs`: schema validation, freshness rules, and filtering.
-- `pantry.json`: public pantry information and availability.
-- `data.test.mjs`: boundary and validation checks.
+- `index.html`, `styles.css`, `favicon.svg`: responsive interface and original vector illustration.
+- `app.mjs`: visitor checklist, staff review, upload, AI and publishing UI.
+- `data.mjs`: strict pantry schema, freshness and filters.
+- `import.mjs`: local CSV parser and safe template.
+- `ai.mjs`: opt-in Puter integration and suggestion validation.
+- `publish.mjs`: Git blob hashing and prepared GitHub request.
+- `scripts/publish-request.mjs`: owner authorization and conflict-safe update processing.
+- `*.test.mjs`: data, import, AI response and publication tests. AI tests mock responses; they do not spend account credits or establish live model accuracy.
+- `pantry.json`: public data, currently fictional.
 
 ## AI assistance and competition status
 
-This initial implementation, visual design, demonstration data, documentation, and tests were generated with assistance from OpenAI's ChatGPT/Codex. It has not been submitted to any competition. Do not describe this implementation as entirely student-written. Any later competition submission must accurately disclose AI assistance and the student's own contributions, and comply with that competition's rules.
+The implementation, visual design, demo data, documentation and tests were created with substantial assistance from OpenAI's ChatGPT/Codex. Runtime stock suggestions additionally use Puter AI when enabled. **Nothing has been submitted to a competition.** Do not describe the implementation as entirely student-written. Any future submission must accurately disclose AI assistance and the student's own contributions and meet that competition's rules.

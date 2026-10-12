@@ -1,0 +1,76 @@
+name: Publish PantryPing
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  issues:
+    types: [opened]
+
+permissions: {}
+
+# Serialize writes/deployments without cancelling an update already in progress.
+concurrency:
+  # Public issues must not displace a pending authorized publication/deployment.
+  group: ${{ (github.event_name != 'issues' || (github.event.issue.title == '[PantryPing] Publish update' && github.event.issue.user.login == github.repository_owner)) && 'pantryping-pages' || format('ignored-issue-{0}', github.event.issue.number) }}
+  cancel-in-progress: false
+
+jobs:
+  process_request:
+    if: github.event_name == 'issues' && github.event.issue.title == '[PantryPing] Publish update' && github.event.issue.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    outputs:
+      published: ${{ steps.publish.outputs.published }}
+    steps:
+      - name: Check out trusted main code
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Validate and process owner request
+        id: publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # The script reads the event JSON file. Never interpolate issue text in shell.
+        run: node scripts/publish-request.mjs
+
+  deploy_pages:
+    needs: process_request
+    if: >-
+      always() && !cancelled() &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch' ||
+      needs.process_request.outputs.published == 'true')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # GITHUB_TOKEN writes do not trigger a second push workflow, so deploy here.
+      - name: Check out latest main
+        uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Check application behavior
+        run: node --test
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Prepare public static files
+        run: |
+          mkdir -p _site
+          cp index.html styles.css favicon.svg pantry.json app.mjs data.mjs ai.mjs publish.mjs import.mjs _site/
+          touch _site/.nojekyll
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
