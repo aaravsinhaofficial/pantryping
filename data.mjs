@@ -10,6 +10,23 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const CLOCK_SKEW_MS = 5 * 60 * 1000;
 const hasOwn = (object, key) => Object.prototype.hasOwnProperty.call(object, key);
 
+/** Keep the time of the actual staff review; later actions must not renew it. */
+export function createInventoryReview() {
+  let confirmedAt = null;
+  return {
+    confirm(now = Date.now()) { confirmedAt = Number.isFinite(now) ? now : null; },
+    invalidate() { confirmedAt = null; },
+    timestamp(now = Date.now()) {
+      if (confirmedAt === null || !Number.isFinite(now) || now < confirmedAt
+          || now - confirmedAt > 15 * 60 * 1000) {
+        confirmedAt = null;
+        throw new Error('Review every status and check the confirmation box again. Reviews expire after 15 minutes.');
+      }
+      return new Date(confirmedAt).toISOString();
+    },
+  };
+}
+
 function record(value, path) {
   if (value === null || typeof value !== 'object' || Array.isArray(value)) {
     throw new Error(`${path} must be an object.`);

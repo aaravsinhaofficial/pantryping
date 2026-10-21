@@ -1,4 +1,4 @@
-import { STATUS_LABELS, validatePantry, getFreshness, filterCategories } from './data.mjs';
+import { STATUS_LABELS, validatePantry, getFreshness, filterCategories, createInventoryReview } from './data.mjs';
 import { parseInventoryCSV, inventoryCSVTemplate } from './import.mjs';
 import { prepareAI, signInAI, generateStockSuggestions } from './ai.mjs';
 import { preparePublishLink, pantryBlobSha } from './publish.mjs';
@@ -12,6 +12,7 @@ const create = (tag, className, text) => {
 };
 const icons = { produce: '🥕', grains: '🍚', canned: '🥫', dairy: '🥛', bread: '🍞', baby: '🍼' };
 const selected = new Set();
+const inventoryReview = createInventoryReview();
 let publishedData, publishedSha, currentData, editorData;
 let isPreview = false;
 let toastTimer, editorRevision = 0, editorSession = 0;
@@ -169,6 +170,7 @@ async function load() {
 }
 function invalidateDraft() {
   editorRevision++;
+  inventoryReview.invalidate();
   $('confirm-stock').checked = false;
   $('publish-ready').hidden = true;
   $('publish-link').removeAttribute('href');
@@ -224,6 +226,9 @@ function readEditor() {
     if ($('pantry-details').querySelector(':invalid')) $('pantry-details').open = true;
     $('editor-form').reportValidity(); return null;
   }
+  let reviewedAt;
+  try { reviewedAt = inventoryReview.timestamp(); }
+  catch (error) { invalidateDraft(); throw error; }
   const data = structuredClone(editorData);
   data.isDemo = $('edit-demo').checked;
   data.timeZone = $('edit-timezone').value.trim();
@@ -235,7 +240,7 @@ function readEditor() {
   });
   data.pantry.requirements = $('edit-requirements').value.split('\n').map(line => line.trim()).filter(Boolean);
   data.categories = data.categories.map((item, index) => ({ ...item, status: $('edit-category-' + index).value }));
-  data.lastUpdatedAt = new Date().toISOString();
+  data.lastUpdatedAt = reviewedAt;
   return validatePantry(data);
 }
 function editorError(error) {
@@ -286,7 +291,10 @@ function choosePanel(name) {
 $('open-editor').addEventListener('click', () => { fillEditor(currentData); $('editor').showModal(); });
 $('close-editor').addEventListener('click', () => { editorSession++; $('editor').close(); });
 $('editor').addEventListener('cancel', () => { editorSession++; });
-$('editor-form').addEventListener('input', event => { if (event.target.id !== 'confirm-stock' || !event.target.checked) invalidateDraft(); });
+$('editor-form').addEventListener('input', event => {
+  if (event.target.id === 'confirm-stock' && event.target.checked) inventoryReview.confirm();
+  else invalidateDraft();
+});
 $('editor-form').addEventListener('submit', event => {
   event.preventDefault();
   try { const data = readEditor(); if (!data) return; isPreview = true; render(data); editorSession++; $('editor').close(); announce('Preview updated in this tab. Nothing has been published.'); }

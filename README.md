@@ -24,6 +24,8 @@ Open **Pantry staff** and choose one of three ways to start:
 
 Review every category and all changed details. Imports and AI set unmentioned categories to **Not confirmed**. Old or undated real JSON reports also become unconfirmed. Check the review box, then preview locally or publish.
 
+The confirmation time is recorded when you check the review box. Previewing, downloading, or preparing a publication does not renew it. Edits invalidate the review; after 15 minutes, review and confirm again.
+
 ### Easier publishing
 
 Choose **Publish with GitHub**, then **Continue to GitHub**. GitHub opens a prepared publication request. Leave the title and JSON unchanged and click **Create** within 15 minutes of your review. The issue, its data, and the repository are public.
@@ -92,4 +94,6 @@ ES modules require HTTP(S); `file:` URLs are unsupported. Failed data loads show
 
 ## AI assistance and competition status
 
-The implementation, visual design, demo data, documentation and tests were created with substantial assistance from OpenAI's ChatGPT/Codex. Runtime stock suggestions additionally use Puter AI when enabled. **Nothing has been submitted to a competition.** Do not describe the implementation as entirely student-written. Any future submission must accurately disclose AI assistance and the student's own contributions and meet that competition's rules.
+The implementation, visual design, demo data, documentation and tests were created with substantial assistance from OpenAI's ChatGPT/Codex. The October 20, 2026 audit, confirmation-time correction, and regression tests were also performed by ChatGPT/Codex; they are not independent student programming contributions. Runtime stock suggestions additionally use Puter AI when enabled. **As of October 20, 2026, the competition portal shows Eligibility in Draft with Action Required; the entry has not been submitted.** Do not describe the implementation as entirely student-written.
+
+The [2026 Congressional App Challenge rules](https://www.congressionalappchallenge.us/wp-content/uploads/2026/05/2026-CAC-Rules.pdf) permit disclosed AI assistance for specific aspects, but prohibit AI from constituting the entirety of technical development and require significant student contributions and technical understanding. Eligibility has not been established. Any submission must accurately identify and substantiate the student's actual work; this audit and disclosure do not establish eligibility.

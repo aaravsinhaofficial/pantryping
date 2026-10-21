@@ -1,8 +1,33 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validatePantry, getFreshness, filterCategories, STATUS_LABELS } from './data.mjs';
+import { validatePantry, getFreshness, filterCategories, STATUS_LABELS, createInventoryReview } from './data.mjs';
 
 const NOW = Date.parse('2026-10-12T22:00:00.000Z');
+
+test('preview, backup, and publication retain the actual review time', () => {
+  const review = createInventoryReview();
+  review.confirm(NOW);
+  for (const delay of [0, 2 * 60_000, 14 * 60_000, 15 * 60_000]) {
+    assert.equal(review.timestamp(NOW + delay), new Date(NOW).toISOString());
+  }
+  assert.throws(() => review.timestamp(NOW + 15 * 60_000 + 1), /expire after 15 minutes/);
+  // Reading the timestamp does not silently renew the expired review.
+  assert.throws(() => review.timestamp(NOW + 16 * 60_000), /check the confirmation box again/);
+  review.confirm(NOW + 16 * 60_000);
+  assert.equal(review.timestamp(NOW + 16 * 60_000), new Date(NOW + 16 * 60_000).toISOString());
+});
+
+test('edits and unreliable clocks require another explicit inventory review', () => {
+  const review = createInventoryReview();
+  assert.throws(() => review.timestamp(NOW), /Review every status/);
+  review.confirm(NOW);
+  review.invalidate();
+  assert.throws(() => review.timestamp(NOW), /Review every status/);
+  review.confirm(NOW);
+  assert.throws(() => review.timestamp(NOW - 1), /Review every status/);
+  review.confirm(NaN);
+  assert.throws(() => review.timestamp(NOW), /Review every status/);
+});
 const fixture = () => ({
   schemaVersion: 1, isDemo: false, lastUpdatedAt: new Date(NOW).toISOString(), timeZone: 'America/Chicago',
   pantry: { name: 'Example pantry', location: 'Example town', address: '', phone: '', hours: [{ days: 'Monday', time: '10 am–noon' }], requirements: ['Bring a bag'], note: '' },
