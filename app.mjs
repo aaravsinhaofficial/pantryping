@@ -1,4 +1,4 @@
-import { STATUS_LABELS, validatePantry, getFreshness, filterCategories, createInventoryReview } from './data.mjs';
+import { STATUS_LABELS, validatePantry, getFreshness, filterCategories, createInventoryReview } from './data.mjs?v=20261020-review';
 import { parseInventoryCSV, inventoryCSVTemplate } from './import.mjs';
 import { prepareAI, signInAI, generateStockSuggestions } from './ai.mjs';
 import { preparePublishLink, pantryBlobSha } from './publish.mjs';
